@@ -45,15 +45,27 @@ app.use("/api/users", usersRoute);
 app.use("/api/posts", postsRoute);
 app.use("/api/categories", categoryRoute);
 
-//test:
-// app.use("/", (req, res) => {
-//   res.send("<h1>hello</h1>");
-// });
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
 });
 
+
+//static file:
+app.use(express.static(path.join(__dirname, "./client/build")));
+// serve index.html for any other requests
+app.get("*", (req, res) => {
+  res.sendFile(
+    path.resolve(__dirname, "client", "build", "index.html"),
+    (err) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Error: Unable to serve index.html");
+      }
+    }
+  );
+});
 
 //PORT:
 const PORT = process.env.PORT || 8080;
