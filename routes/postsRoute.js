@@ -1,14 +1,27 @@
 const express = require("express");
-const User = require("../models/User");
 const Post = require("../models/Post");
+const cloudinary = require("../utils/cloudinary");
 
 const router = express.Router();
 
 //CREATE POST
 router.post("/", async (req, res) => {
-  const newPost = new Post(req.body);
+  // const newPost = new Post(req.body);
+  const { title, desc, photo, username, categories } = req.body;
   try {
-    const savedPost = await newPost.save();
+    const result = await cloudinary.uploader.upload(photo, {
+      folder: "Blogs",
+    });
+    const savedPost = await Post.create({
+      title,
+      desc,
+      photo: {
+        public_id: result.public_id,
+        url: result.secure_url,
+      },
+      username,
+      categories,
+    });
     res.status(200).json({
       message: "posted successfully",
       savedPost,
@@ -77,24 +90,26 @@ router.get("/:id", async (req, res) => {
 
 //GET ALL POSTS || GET
 router.get("/", async (req, res) => {
-    const username = req.query.user
-    const catname = req.query.cat
-    try {
-        let posts;
-        if(username){
-            posts = await Post.find({username})
-        }else if(catname){
-            posts = await Post.find({categories:{
-                $in:[catname]
-            }})
-        }else{
-            posts = await Post.find()
-        }
-      res.status(200).json(posts);
-    } catch (error) {
-      res.status(500).json(error);
-      // console.log(error);
+  const username = req.query.user;
+  const catname = req.query.cat;
+  try {
+    let posts;
+    if (username) {
+      posts = await Post.find({ username });
+    } else if (catname) {
+      posts = await Post.find({
+        categories: {
+          $in: [catname],
+        },
+      });
+    } else {
+      posts = await Post.find();
     }
-  });
+    res.status(200).json(posts);
+  } catch (error) {
+    res.status(500).json(error);
+    // console.log(error);
+  }
+});
 
 module.exports = router;

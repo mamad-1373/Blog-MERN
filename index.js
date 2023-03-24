@@ -6,18 +6,17 @@ const authRoute = require("./routes/authRoute");
 const usersRoute = require("./routes/usersRoute");
 const postsRoute = require("./routes/postsRoute");
 const categoryRoute = require("./routes/categoryRoute");
-const multer = require("multer");
-const path = require("path")
-const cors = require('cors')
+
+const path = require("path");
+const cors = require("cors");
 
 //rest obj:
 const app = express();
 
 //middlewares:
-app.use(express.json());
-app.use(cors())
-
-app.use("/images", express.static(path.join(__dirname, "/images")))
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ limit: "1mb", extended: true }));
+app.use(cors());
 
 //config env file:
 dotenv.config();
@@ -25,36 +24,20 @@ dotenv.config();
 //MongoDB connect:
 connectDB();
 
-//MULTER disk storage:
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "images");
-  },
-  filename: (req, file, cb) => {
-    cb(null, req.body.name);
-  },
-});
-const upload = multer({ storage: storage });
-app.post("/api/upload", upload.single("file"), (req, res) => {
-  res.status(200).json("file has been uploaded");
-});
-
 //routes:
 app.use("/api/auth", authRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/posts", postsRoute);
 app.use("/api/categories", categoryRoute);
 
-
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send('Something broke!');
+  res.status(500).send("Something broke!");
 });
-
 
 //static file:
 app.use(express.static(path.join(__dirname, "./client/build")));
-// serve index.html for any other requests
+// serve index.html
 app.get("*", (req, res) => {
   res.sendFile(
     path.resolve(__dirname, "client", "build", "index.html"),
