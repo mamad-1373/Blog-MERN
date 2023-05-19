@@ -7,6 +7,7 @@ const usersRoute = require("./routes/usersRoute");
 const postsRoute = require("./routes/postsRoute");
 const categoryRoute = require("./routes/categoryRoute");
 
+
 const path = require("path");
 const cors = require("cors");
 

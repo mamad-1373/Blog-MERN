@@ -9,7 +9,7 @@ const PostSchema = new mongoose.Schema(
     },
     desc: {
       type: String,
-      required: true,
+      required: false,
     },
     photo: {
       public_id: {
@@ -23,7 +23,7 @@ const PostSchema = new mongoose.Schema(
     },
     username: {
       type: String,
-      required: true,
+      required: false,
     },
     categories: {
       type: Array,
