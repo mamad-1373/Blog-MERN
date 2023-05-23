@@ -1,6 +1,5 @@
 const express = require("express");
 const Post = require("../models/Post");
-const User = require("../models/User"); // Import the User model
 const cloudinary = require("../utils/cloudinary");
 
 const router = express.Router();
@@ -52,39 +51,6 @@ router.put("/:id", async (req, res) => {
         res.status(401).json("You can update only your post");
       }
     }
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
-
-// LIKE POST
-router.put("/:id/like", async (req, res) => {
-  const postId = req.params.id;
-  const userId = req.body.userId;
-
-  try {
-    const post = await Post.findById(postId);
-    const user = await User.findById(userId);
-
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    if (post.likedBy.includes(userId)) {
-      return res
-        .status(400)
-        .json({ message: "Post already liked by the user" });
-    }
-
-    post.likedBy.push(userId);
-    post.likeCount++;
-    await post.save();
-
-    res.status(200).json({ message: "Post liked successfully", post });
   } catch (error) {
     res.status(500).json(error);
   }
