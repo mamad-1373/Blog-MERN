@@ -29,6 +29,22 @@ const PostSchema = new mongoose.Schema(
       type: Array,
       required: false,
     },
+    likeCount: {
+      type: Number,
+      default: 0,
+    },
+    likedBy: {
+      type: Array,
+      default: [],
+    },
+    commentedBy: {
+      type: Array,
+      default: [],
+    },
+    comments: {
+      type: Array,
+      default: [],
+    },
   },
   { timestamps: true }
 );
